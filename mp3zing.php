@@ -36,7 +36,7 @@ class Zing {
         return $this->hash512($url.$this->hash256($str), $key);
     }
 
-    public function searchSong($songName, $page = 2) {
+    public function searchSong($songName, $page = 1) {
         $client = new Client(['verify' => false]);
 
         $cookieJar = CookieJar::fromArray($this->getCookies(), 'zingmp3.vn');
@@ -74,19 +74,46 @@ class Zing {
         $arrData = json_decode($res->getBody()->getContents());
 
         $listSong = [];
+
+        $track = 1;
         
         foreach ($arrData->data->songs as $value) {
             if (is_array($value) || is_object($value)) {
+                $song = $this->songDetail($value->encodeId);
                 array_push($listSong, 
                     [
                         "id" => $value->encodeId,
                         "title" => $value->title,
                         "singer" => $value->artistsNames,
-                        "link" => $this->songDetail($value->encodeId)
+                        "link" => $song,
+                        "file" => $song,
+                        "name" => $value->title.' - '. $value->artistsNames,
+                        "track" => $track
                     ]
                 );
             }
+            $track++;
         }
+        if(!empty($arrData->data->topSuggest)) {
+            foreach ($arrData->data->topSuggest as $value) {
+                if (is_array($value) || is_object($value)) {
+                    $song = $this->songDetail($value->encodeId);
+                    array_push($listSong, 
+                        [
+                            "id" => $value->encodeId,
+                            "title" => $value->title,
+                            "singer" => '',
+                            "link" => $song,
+                            "file" => $song,
+                            "name" => $value->title,
+                            "track" => $track
+                        ]
+                    );
+                }
+            }
+            $track++;
+        }
+
 
         return $listSong;
     }
@@ -104,7 +131,6 @@ class Zing {
     }
 
     public function songDetail($songID) {
-        $songID = "ZOZ0WD80";
 
         $client = new Client(['verify' => false]);
 

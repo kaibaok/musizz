@@ -19,9 +19,12 @@
     use GuzzleHttp\Client;
 
     $listSong = null;
+
+    if(isset($_POST['song'])) {
         $zing = new Zing();
-        $msg = (isset($_POST['song'])) ? $_POST['song'] : 'blackjack';
+        $msg = $_POST['song'];
         $listSong = $zing->searchSong($msg);
+    }
     ?>
 
     <div class="container">
@@ -70,9 +73,19 @@ jQuery(function ($) {
         // initialize playlist and controls
         var index = 0,
             playing = false,
-            mediaPath = '',
+            mediaPath = 'https://archive.org/download/mythium/',
             extension = '',
-            tracks = <?= json_encode($listSong) ?>,
+            tracks = [{
+                "track": 1,
+                "name": "All This Is - Joe L.'s Studio",
+                "duration": "2:46",
+                "file": "JLS_ATI"
+            }, {
+                "track": 2,
+                "name": "The Forsaken - Broadwing Studio (Final Mix)",
+                "duration": "8:30",
+                "file": "BS_TF"
+            }],
             buildPlaylist = $.each(tracks, function(key, value) {
                 var trackNumber = value.track,
                     trackName = value.name,
@@ -84,6 +97,7 @@ jQuery(function ($) {
                     <div class="plItem"> \
                         <span class="plNum">' + trackNumber + '.</span> \
                         <span class="plTitle">' + trackName + '</span> \
+                        <span class="plLength">' + trackDuration + '</span> \
                     </div> \
                 </li>');
             }),
