@@ -76,7 +76,7 @@ class Zing {
         $listSong = [];
 
         $track = 1;
-        
+
         foreach ($arrData->data->songs as $value) {
             if (is_array($value) || is_object($value)) {
                 $song = $this->songDetail($value->encodeId);
@@ -94,6 +94,8 @@ class Zing {
             }
             $track++;
         }
+
+
         if(!empty($arrData->data->topSuggest)) {
             foreach ($arrData->data->topSuggest as $value) {
                 if (is_array($value) || is_object($value)) {
@@ -113,7 +115,6 @@ class Zing {
             }
             $track++;
         }
-
 
         return $listSong;
     }
@@ -163,8 +164,8 @@ class Zing {
         ]);
 
         $arrData = json_decode($res->getBody()->getContents());
-        
-        return $arrData->data->{'128'};
+
+        return (!empty($arrData->data) && !empty($arrData->data->{'128'})) ? $arrData->data->{'128'} : '';
     }
 }
 
